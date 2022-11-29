@@ -90,20 +90,65 @@ var upperCasedCharacters = [
 
 // Function to prompt user for password options
 function getPasswordOptions() {
-  prompt('choose the length of your password,between 10-64 characters!');
-var passLength = 64;
-var password = " ";
+  var passwordLength = prompt('What is the length of the password? It should be between 10 and 64.');
+  
+  while (passwordLength < 10 || passwordLength > 64) {
+    passwordLength = prompt('The password length should be between 10 and 64.');
+  }
+  
+  var hasUppercase = confirm('Should have uppercase?')
+  var hasLowercase = confirm('Should have lowercase?')
+  var hasNumber = confirm('Should have number?')
+  var hasSpecialChar = confirm('Should have special characters?')
+  
+  if (!(hasUppercase || hasLowercase || hasNumber || hasSpecialChar)) {
+    alert('You must select at least one character type.')
+    return getPasswordOptions()
 
+  }
+
+  return {passwordLength, hasUppercase, hasLowercase, hasNumber, hasSpecialChar}
 }
 
 // Function for getting a random element from an array
 function getRandom(arr) {
-
+// Copied from https://stackoverflow.com/a/5915122/7647536
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 // Function to generate password with user input
 function generatePassword() {
-getPasswordOptions();
+// getPasswordOptions();
+
+var {passwordLength, hasUppercase, hasLowercase, hasNumber, hasSpecialChar} = getPasswordOptions()
+  
+  var chars = [...(hasUppercase ? upperCasedCharacters : []), ...(hasLowercase ? lowerCasedCharacters : []), ...(hasNumber ? numericCharacters : []), ...(hasSpecialChar? specialCharacters : [])]
+
+  var password = ''
+
+  for (var i = 0; i < passwordLength; i++) {
+    var arr
+    
+    if (i === 0 && hasUppercase) {
+      arr = upperCasedCharacters
+    } else if (i === 1 && hasLowercase) {
+      arr = lowerCasedCharacters
+    } else if (i === 2 && hasNumber) {
+      arr =  numericCharacters 
+    } else if (i === 3 && hasSpecialChar) {
+      arr = specialCharacters
+    } else {
+      arr = chars
+    }
+    
+    var char = getRandom(arr);
+    password += char
+  }
+  
+  // Copied from https://stackoverflow.com/a/13365977/7647536
+  var shuffled = password.split('').sort(() => 0.5-Math.random()).join('');
+  
+  return shuffled
 }
 
 // Get references to the #generate element
